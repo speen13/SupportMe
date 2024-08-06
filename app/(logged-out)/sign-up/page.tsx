@@ -29,7 +29,7 @@ const formSchema = z.object({
         return date <= age
     }, 'You must be at least 18 years old')
 
-}).superRefine((data:{}, ctx) => {
+}).superRefine((data, ctx) => {
     if (data.accountType === 'company' && !data.companyName) {
         ctx.addIssue({
            code: z.ZodIssueCode.custom,
