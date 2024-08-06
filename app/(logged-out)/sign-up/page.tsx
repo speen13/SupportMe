@@ -37,13 +37,13 @@ const formSchema = z.object({
             message: 'Company name is required for company accounts.',
         });
     }
-    if (data?.accountType === 'company' && !data?.numberOfEmployees || data?.numberOfEmployees < 1) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['numberOfEmployees'],
-            message: 'Number of employees is required for company accounts.',
-        });
-    }
+    // if (data.accountType === 'company' && !data.numberOfEmployees || data.numberOfEmployees < 1) {
+    //     ctx.addIssue({
+    //         code: z.ZodIssueCode.custom,
+    //         path: ['numberOfEmployees'],
+    //         message: 'Number of employees is required for company accounts.',
+    //     });
+    // }
 })
 
 export default function SignUpPage() {
