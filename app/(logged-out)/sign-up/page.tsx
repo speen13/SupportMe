@@ -37,7 +37,7 @@ const formSchema = z.object({
             message: 'Company name is required for company accounts.',
         });
     }
-    if (data.accountType === 'company' && !data?.numberOfEmployees || data?.numberOfEmployees < 1) {
+    if (data?.accountType === 'company' && !data?.numberOfEmployees || data?.numberOfEmployees < 1) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['numberOfEmployees'],
