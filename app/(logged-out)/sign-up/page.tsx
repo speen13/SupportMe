@@ -12,6 +12,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Calendar} from "@/components/ui/calendar";
+import {format} from "date-fns";
 
 
 const formSchema = z.object({
@@ -27,9 +28,23 @@ const formSchema = z.object({
             toDay.getDate()
         );
         return date <= age
-    }, 'You must be at least 18 years old')
-
+    }, 'You must be at least 18 years old'),
+    password: z.string().min(8, 'Password must be at least 8 characters')
+        .refine((password) => {
+            //один специальный символ и одна буква в верхнем регистре обязательны
+            return /[A-Z]/.test(password)
+        }, 'пароль должен содержать минимум одну букву в верхнем регистре обязательны'),
+    passwordConfirm: z.string()
 }).superRefine((data, ctx) => {
+
+    if(data.password !== data.passwordConfirm) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['passwordConfirm'],
+            message: 'Passwords do not match.',
+        })
+    }
+
     if (data.accountType === 'company' && !data.companyName) {
         ctx.addIssue({
            code: z.ZodIssueCode.custom,
@@ -168,7 +183,7 @@ const dobFromDate = new Date()
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button variant='outline' className='normal-case flex justify-between pr-1'>
-                                                       <span> Pick a date</span>
+                                                        {!!field.value ? format(field.value, 'PPP') : <span> Pick a date</span>}
                                                         <CalendarIcon />
                                                     </Button>
                                                 </FormControl>
@@ -183,7 +198,7 @@ const dobFromDate = new Date()
                                                    weekStartsOn={1}
                                                    fromDate={dobFromDate}
                                                    toDate={new Date()}
-                                                   // captionLayout='dropdown-buttons'
+                                                   captionLayout='dropdown-buttons'
                                                />
                                             </PopoverContent>
                                         </Popover>
@@ -195,6 +210,38 @@ const dobFromDate = new Date()
                                     </FormItem>
                                 )}
                             />
+
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='********' type='password' {...field} />
+                                        </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="passwordConfirm"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='********' type='password' {...field} />
+                                        </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+
                             <Button type='submit'>Sign up</Button>
                         </form>
                     </Form>
