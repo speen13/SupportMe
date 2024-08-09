@@ -35,7 +35,7 @@ export default function LoginPage() {
     return (
        <>
            <PersonStandingIcon size={50}/>
-       <Card className='w-full max-w-xl'>
+       <Card className='w-full max-w-sm'>
            <CardHeader>
                <CardTitle>
                    Login

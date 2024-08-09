@@ -69,7 +69,7 @@ const dobFromDate = new Date()
     return (
         <>
             <PersonStandingIcon size={50}/>
-            <Card className='w-full max-w-xl'>
+            <Card className='w-full max-w-sm '>
                 <CardHeader>
                     <CardTitle>
                         Sign Up
