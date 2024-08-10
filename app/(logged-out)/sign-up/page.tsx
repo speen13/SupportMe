@@ -13,41 +13,16 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Calendar} from "@/components/ui/calendar";
 import {format} from "date-fns";
+import {PasswordInput} from "@/components/ui/password-input";
 
-
-const formSchema = z.object({
-    email: z.string().email(),
+const accountTypeSchema = z.object({
     accountType: z.enum(['personal', 'company']),
     companyName: z.string().optional(),
     numberOfEmployees: z.coerce.number().optional(),
-    dob: z.date().refine((date) => {
-        const toDay = new Date();
-        const age = new Date(
-            toDay.getFullYear() - 18,
-            toDay.getMonth(),
-            toDay.getDate()
-        );
-        return date <= age
-    }, 'You must be at least 18 years old'),
-    password: z.string().min(8, 'Password must be at least 8 characters')
-        .refine((password) => {
-            //один специальный символ и одна буква в верхнем регистре обязательны
-            return /[A-Z]/.test(password)
-        }, 'пароль должен содержать минимум одну букву в верхнем регистре обязательны'),
-    passwordConfirm: z.string()
 }).superRefine((data, ctx) => {
-
-    if(data.password !== data.passwordConfirm) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['passwordConfirm'],
-            message: 'Passwords do not match.',
-        })
-    }
-
     if (data.accountType === 'company' && !data.companyName) {
         ctx.addIssue({
-           code: z.ZodIssueCode.custom,
+            code: z.ZodIssueCode.custom,
             path: ['companyName'],
             message: 'Company name is required for company accounts.',
         });
@@ -60,6 +35,43 @@ const formSchema = z.object({
         });
     }
 })
+
+const passwordSchema = z.object({
+    password: z.string().min(8, 'Password must be at least 8 characters')
+        .refine((password) => {
+            //один специальный символ и одна буква в верхнем регистре обязательны
+            return /[A-Z]/.test(password)
+        }, 'пароль должен содержать минимум одну букву в верхнем регистре обязательны'),
+    passwordConfirm: z.string(),
+}).superRefine((data, ctx) => {
+
+    if(data.password !== data.passwordConfirm) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['passwordConfirm'],
+            message: 'Passwords do not match.',
+        })
+    }
+
+
+})
+
+const baseSchema = z.object({
+    email: z.string().email(),
+
+    dob: z.date().refine((date) => {
+        const toDay = new Date();
+        const age = new Date(
+            toDay.getFullYear() - 18,
+            toDay.getMonth(),
+            toDay.getDate()
+        );
+        return date <= age
+    }, 'You must be at least 18 years old'),
+
+})
+
+const formSchema = baseSchema.and(passwordSchema).and(accountTypeSchema)
 
 export default function SignUpPage() {
 
@@ -218,7 +230,7 @@ const dobFromDate = new Date()
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='********' type='password' {...field} />
+                                            <PasswordInput placeholder='********' type='password' {...field} />
                                         </FormControl>
 
                                         <FormMessage />
@@ -233,7 +245,7 @@ const dobFromDate = new Date()
                                     <FormItem>
                                         <FormLabel>Confirm Password</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='********' type='password' {...field} />
+                                            <PasswordInput placeholder='********' type='password' {...field} />
                                         </FormControl>
 
                                         <FormMessage />
