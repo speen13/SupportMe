@@ -2,7 +2,7 @@
 
 import {CalendarIcon, PersonStandingIcon} from "lucide-react";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Form, FormControl,  FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
@@ -14,6 +14,8 @@ import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Calendar} from "@/components/ui/calendar";
 import {format} from "date-fns";
 import {PasswordInput} from "@/components/ui/password-input";
+import {Checkbox} from "@/components/ui/checkbox";
+import {useRouter} from "next/navigation";
 
 const accountTypeSchema = z.object({
     accountType: z.enum(['personal', 'company']),
@@ -58,7 +60,9 @@ const passwordSchema = z.object({
 
 const baseSchema = z.object({
     email: z.string().email(),
-
+    acceptTerms: z.boolean({
+        required_error: 'You must accept the terms and conditions',
+    }).refine((checked) => checked, 'You must accept the terms and conditions'),
     dob: z.date().refine((date) => {
         const toDay = new Date();
         const age = new Date(
@@ -75,16 +79,24 @@ const formSchema = baseSchema.and(passwordSchema).and(accountTypeSchema)
 
 export default function SignUpPage() {
 
+const router = useRouter()
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: '',
+            password: '',
+            passwordConfirm: '',
+            companyName: '',
+
 
         }
     })
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
+        console.log(data)
+        router.push('/dashboard')
+
     }
 
 const accountType = form.watch('accountType')
@@ -176,7 +188,7 @@ const dobFromDate = new Date()
                                     <FormItem>
                                         <FormLabel>Employees</FormLabel>
                                         <FormControl>
-                                            <Input type='number' min={0} placeholder='Employees'  {...field} />
+                                            <Input value={field.value ?? ''} type='number' min={0} placeholder='Employees'  {...field} />
                                         </FormControl>
 
                                         <FormMessage />
@@ -214,9 +226,6 @@ const dobFromDate = new Date()
                                                />
                                             </PopoverContent>
                                         </Popover>
-                                        <FormControl>
-                                            <Input type='number' min={0} placeholder='Employees'  {...field} />
-                                        </FormControl>
 
                                         <FormMessage />
                                     </FormItem>
@@ -247,6 +256,27 @@ const dobFromDate = new Date()
                                         <FormControl>
                                             <PasswordInput placeholder='********' type='password' {...field} />
                                         </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="acceptTerms"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <div className='flex gap-2 items-center'>
+                                            <FormControl>
+                                               <Checkbox checked={field.value} onCheckedChange={field.onChange}/>
+                                            </FormControl>
+                                            <FormLabel>I accept the terms and conditions</FormLabel>
+                                        </div>
+                                        <FormDescription>
+                                            By signing up you agree to our <Link className='text-primary hover:underline' href='/terms'>terms and conditions</Link>
+                                        </FormDescription>
+
 
                                         <FormMessage />
                                     </FormItem>
