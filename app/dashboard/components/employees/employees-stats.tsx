@@ -1,7 +1,7 @@
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {
     AlertTriangleIcon,
-    BadgeCheckIcon,
+    BadgeCheckIcon, LaptopIcon,
     PartyPopperIcon,
     UserCheck2Icon,
     UserIcon,
@@ -12,6 +12,7 @@ import Link from "next/link";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import Image from "next/image";
 import cm from '@/public/images/34 - cm.jpg'
+import WorkLocationTrends from "@/app/dashboard/components/employees/work-location-trends";
 
 
 export default function EmployeesStats() {
@@ -19,6 +20,7 @@ export default function EmployeesStats() {
     const employeesPresent = 80
     const employeesPresentPercentage = (employeesPresent / totalEmployees) * 100
     return (
+        <>
         <div className='grid lg:grid-cols-3 gap-4'>
            <Card>
                <CardHeader className='pb-2'>
@@ -92,5 +94,17 @@ export default function EmployeesStats() {
                 </CardFooter>
             </Card>
         </div>
+            <Card className='my-4'>
+                <CardHeader>
+                    <CardTitle className='text-lg flex items-center gap-2'>
+                        <LaptopIcon />
+                        <span>Employee work location trends</span>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className='pl-0'>
+                    <WorkLocationTrends />
+                </CardContent>
+            </Card>
+        </>
     )
 }
