@@ -1,3 +1,5 @@
+"use client"
+
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import EmployeesStats from "@/app/dashboard/components/employees/employees-stats";
 import TeamsStats from "@/app/dashboard/components/teams/teams-stats";
